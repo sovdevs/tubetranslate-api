@@ -5,14 +5,26 @@ from fastapi.responses import HTMLResponse
 import re
 import os
 from datetime import datetime
-import constants
 import whisper
 from whisper.utils import write_srt
 
 app = FastAPI()
 
+MAX_WHISPER_CONTENT_SIZE = 26214400
 
-
+deployment_version = os.environ.get('DEPLOYMENT_VERSION')
+if deployment_version == 'dev':
+    # Perform actions specific to the development version
+    print("Running in development version")
+    import constants
+elif deployment_version == 'prod':
+    # Perform actions specific to the production version
+    APIKEY = os.environ.get('APIKEY')
+    print("Running in production version")
+    
+else:
+    # Handle cases where the variable is not set or has an unexpected value
+    print("Unknown or undefined deployment version")
 
 def hook(d):
     if d['status'] == 'finished':
@@ -73,11 +85,13 @@ async def transcribe_to_srt(youtube_id: str):
  print(user_dir, youtube_id)
  input_file_path = f"temp/{youtube_id}.mp3"
  output_dir = "./temp/"
+ if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
  output_file_path = os.path.join("temp", f"{youtube_id}_src.srt")
  try:
      file_size = os.path.getsize(input_file_path)
      # By default, the Whisper API only supports files that are less than 25 MB.
-     max_file_size = constants.MAX_WHISPER_CONTENT_SIZE
+     max_file_size = MAX_WHISPER_CONTENT_SIZE
      msg = ""
      if file_size > max_file_size:
         msg = "File size exceeds the content size limit. Skipping transcription."
