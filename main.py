@@ -1,10 +1,14 @@
 
 import yt_dlp
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 from fastapi.responses import HTMLResponse
 import re
 import os
 from datetime import datetime
+import constants
+import whisper
+from whisper.utils import write_srt
+
 app = FastAPI()
 
 
@@ -61,8 +65,84 @@ def extract_youtube_id(youtube_input: str) -> str:
     
     return youtube_id
 
-#EP1 Info Input YTID -> return HTML with buttons
+#EP2 transcribe returns button with API to dwnload SRT FILE
+@app.post("/srt/transcribe", response_class=HTMLResponse)
+async def transcribe_to_srt(youtube_id: str):
+ youtube_id = extract_youtube_id(youtube_id)
+ user_dir = "tt"
+ print(user_dir, youtube_id)
+ input_file_path = f"temp/{youtube_id}.mp3"
+ output_dir = "./temp/"
+ output_file_path = os.path.join("temp", f"{youtube_id}_src.srt")
+ try:
+     file_size = os.path.getsize(input_file_path)
+     # By default, the Whisper API only supports files that are less than 25 MB.
+     max_file_size = constants.MAX_WHISPER_CONTENT_SIZE
+     msg = ""
+     if file_size > max_file_size:
+        msg = "File size exceeds the content size limit. Skipping transcription."
+        return """
+          <div>
+          <ul class="p-4 mb-4 bg-red-100">
+              <li>File size: {file_size}</li>
+              <li>{msg}</li>
+          </ul>
+          </div>
+          """.format(file_size=file_size, msg=msg)
+     else:
+        print('Processing ' + output_file_path + '...')
+        model = whisper.load_model("small") # small seems good enough for EN 
+        result = model.transcribe(input_file_path,fp16=False) #taking too long
+        with open(output_file_path, "w", encoding="utf-8") as srt_file:
+              write_srt(result["segments"], file=srt_file)
 
+        msg = f"srt written to {output_file_path}"
+        return """
+              <div>
+              <ul class="p-4 mb-4 bg-green-100">
+                  <li>File size: {file_size}</li>
+                  <li>{msg}</li>
+              </ul>
+                   <button onclick="getSRT('{youtube_id}')" class="bg-purple-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">DL SRT file</button>
+              </div>   <script src="https://cdn.tailwindcss.com"></script>
+                <script>
+                    const youtube_id = '{youtube_id}';
+                    const user_dir = '{user_dir}';
+
+                function transcribeSRT() {{
+                    fetch('/srt/transcribe/' + encodeURIComponent(youtube_id) + '?user_dir=' + encodeURIComponent(user_dir), {{ method: 'POST' }})
+                    .then(response => response.text())
+                    .then(data => {{
+                        document.getElementById('transcribeResult').innerHTML = data;
+                    }})
+                    .catch(error => {{
+                        console.error('Error:', error);
+                    }});
+                }}
+                function getSRT() {{
+                    fetch(`/srt/target/{youtube_id}?user_dir={user_dir}`)
+                    .then(response => response.blob())
+                    .then(blob => {{
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `{youtube_id}.srt`;
+                        a.click();
+                    }})
+                    .catch(error => {{
+                        console.error('Error:', error);
+                    }});
+                }}
+                </script>
+        """.format(file_size=file_size, msg=msg,youtube_id=youtube_id, user_dir=user_dir)
+
+ except FileNotFoundError:
+     raise HTTPException(status_code=404, detail="Output file not found.")
+  
+  
+
+
+#EP1 Info Input YTID -> return HTML with buttons
 @app.post("/info/", response_class=HTMLResponse)
 async def get_info_from_button(youtube_id: str):
  youtube_id = extract_youtube_id(youtube_id)
@@ -73,8 +153,9 @@ async def get_info_from_button(youtube_id: str):
                <h1> DO X or DO Y </h1>
                </div>
                 <div>
-                    <button onclick="transcribeSRT('{youtube_id}')" class="bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-green-700 mr-2">Translate</button>
-                    <button onclick="getSRT('{youtube_id}')" class="bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Get SRT</button>
+                    <button onclick="transcribeSRT('{youtube_id}')" class="bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-green-700 mr-2">Transcribe/button>
+                    <button onclick="summarizeSRT('{youtube_id}')" class="bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Summarize</button>
+                    <button onclick="translateSRT('{youtube_id}')" class="bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Translate</button>
                 </div>
                 <div id="transcribeResult"></div>
                 <div id="getSRTResult"></div>
@@ -84,7 +165,7 @@ async def get_info_from_button(youtube_id: str):
                     const user_dir = '{user_dir}';
 
                 function transcribeSRT() {{
-                    fetch('/srt/translate/' + encodeURIComponent(youtube_id) + '?user_dir=' + encodeURIComponent(user_dir), {{ method: 'POST' }})
+                    fetch('/srt/transcribe/' + encodeURIComponent(youtube_id) + '?user_dir=' + encodeURIComponent(user_dir), {{ method: 'POST' }})
                     .then(response => response.text())
                     .then(data => {{
                         document.getElementById('transcribeResult').innerHTML = data;
