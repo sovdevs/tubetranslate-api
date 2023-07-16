@@ -54,3 +54,4 @@ websockets==11.0.3
 yt-dlp @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz
 tiktoken
 numba
+pysrt
