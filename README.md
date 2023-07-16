@@ -1,3 +1,6 @@
 # tubetranslate-api
 
-/Users/derzessionar/prog/chatgpt/py/tubetranslate-app/.venv/bin/python3 -m uvicorn main:app --port 8004 --reload
+FastAPi app so check out /docs for endpoints
+/info/ writes to file, returns HTML snippet
+No / 
+
