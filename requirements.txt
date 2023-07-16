@@ -27,7 +27,7 @@ mutagen==1.46.0
 networkx==3.1
 numpy
 onnxruntime
-openai-whisper @ git+https://github.com/openai/whisper.git@b91c907694f96a3fb9da03d4bbdc83fbcd3a40a4
+openai-whisper
 packaging==23.1
 protobuf==4.23.4
 pycryptodomex==3.18.0
