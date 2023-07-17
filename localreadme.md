@@ -36,3 +36,12 @@ which will anyway allow for write
 temporary fix...
 
 Looka at using a different venv
+
+
+
+# MON 17
+
+try docker container with ppmpeg
+https://fastapi.tiangolo.com/deployment/docker/
+deplpy thayt way
+
