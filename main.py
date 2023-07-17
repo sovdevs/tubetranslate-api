@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 import re
 import os
 import whisper
-from whisper.utils import write_srt
+
 from datetime import datetime
 # import pysrt
 app = FastAPI()
@@ -106,26 +106,14 @@ async def transcribe_to_srt(youtube_id: str):
         print('Processing ' + output_file_path + '...')
         model = whisper.load_model("small") # small seems good enough for EN 
         result = model.transcribe(input_file_path,fp16=False) #taking too long
-        ### WORKAROUND SRT WRITER ###3
-        # subs = pysrt.SubRipFile()
-        # sub_idx = 1
-        # for i in range(len(result["segments"])):
-        #     start_time = result["segments"][i]["start"]
-        #     end_time = result["segments"][i]["end"]
-        #     duration = end_time - start_time
-        #     timestamp = f"{start_time:.3f} - {end_time:.3f}"
-        #     text = result["segments"][i]["text"]
-            
-        #     sub = pysrt.SubRipItem(index=sub_idx, start=pysrt.SubRipTime(seconds=start_time), 
-        #                         end=pysrt.SubRipTime(seconds=end_time), text=text)
-        #     subs.append(sub)
-        #     sub_idx += 1
-            
-        # subs.save(output_file_path)
-        ## GARBAGE SLOW
-        with open(output_file_path, "w", encoding="utf-8") as srt_file:
-              write_srt(result["segments"], file=srt_file)
-
+        if deployment_version == 'dev':
+            from whisper.utils import write_srt
+            with open(output_file_path, "w", encoding="utf-8") as srt_file:
+                write_srt(result["segments"], file=srt_file)
+        else:
+            srt_writer = whisper.utils.get_writer("srt", output_dir)
+            srt_writer(result, output_file_path)
+    
         msg = f"srt written to {output_file_path}"
         return """
               <div>
