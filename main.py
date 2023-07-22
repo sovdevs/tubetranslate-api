@@ -1,67 +1,108 @@
 import yt_dlp
-from fastapi import FastAPI,HTTPException
-from fastapi.responses import HTMLResponse
+import asyncio
+import sys
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Request, status
+from fastapi.responses import HTMLResponse, FileResponse,JSONResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from loguru import logger
 import re
 import os
 import whisper
-
+import subprocess
+import schedule
+import json
+import time
 from datetime import datetime
+from pytube import YouTube
+
 # import pysrt
 app = FastAPI()
+logger.remove()
+logger.add(
+    sys.stdout,
+    colorize=True,
+    format="<green>{time:HH:mm:ss}</green> | {level} | <level>{message}</level>",
+)
+security = HTTPBasic()
 
 MAX_WHISPER_CONTENT_SIZE = 26214400
 
-deployment_version = os.environ.get('DEPLOYMENT_VERSION')
-if deployment_version == 'dev':
-    # Perform actions specific to the development version
-    print("Running in development version")
-    import constants
-elif deployment_version == 'prod':
-    # Perform actions specific to the production version
-    APIKEY = os.environ.get('APIKEY')
-    print("Running in production version")
+
+#### Client Code
+@app.get("/srt/source")
+async def get_file_src_srt(video_id: str, download_path: str)->FileResponse:
+    file_path = os.path.join(download_path, f"{video_id}_src.srt")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        error_msg = {"error": "File not ready yet. Please try again later"}
+        raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=error_msg)
+
+@app.get("/srt/target")
+async def get_file_trg_srt(youtube_id: str, download_path: str)->FileResponse:
+    file_path = os.path.join(download_path, f"{youtube_id}_trg.srt")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        error_msg = {"error": "File not ready yet. Please try again later"}
+        raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=error_msg)
+
+@app.get("/plain/source")
+async def get_file_src_txt(youtube_id: str, download_path: str)->FileResponse:
+    file_path = os.path.join(download_path, f"{youtube_id}_src.txt")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        error_msg = {"error": "File not ready yet. Please try again later"}
+        raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=error_msg)
+
+@app.get("/plain/target")
+async def get_file_trg_txt(youtube_id: str, download_path: str)->FileResponse:
+    file_path = os.path.join(download_path, f"{youtube_id}_trg.txt")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        error_msg = {"error": "File not ready yet. Please try again later"}
+        raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=error_msg)
+
+@app.get("/file_processed")
+async def check_file(youtube_id: str, download_path: str):
+    file_path = os.path.join(download_path, f"{youtube_id}_trg.srt")
     
-else:
-    # Handle cases where the variable is not set or has an unexpected value
-    print("Unknown or undefined deployment version")
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        return JSONResponse(content={"file_exists": True}, status_code=status.HTTP_200_OK)
+    else:
+        return JSONResponse(content={"file_exists": False}, status_code=status.HTTP_404_NOT_FOUND)
 
-def hook(d):
-    if d['status'] == 'finished':
-        filename = d['filename']
-        video_id = d['filename'].split('.')[0]
-        print(filename) # Here you will see the PATH where was saved.
-        with open('downloaded.txt', 'a') as f:
-             f.write(f"{video_id} {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-
-
-def get_info(youtube_id, download=False):
-   youtube_url = f"https://www.youtube.com/watch?v={youtube_id}"
-   ydl_opts = { 
+### alkt DL 
+async def download_best_audio_ytdl(video_url, download_path):
+    options = {
         'format': 'bestaudio/best',
-        'outtmpl': 'temp/%(id)s.%(ext)s',
-        'download_archive': 'downloaded.txt',
-        'noplaylist': True,   
-        'quiet': True,
-        'no_warnings': True,
+        'outtmpl': os.path.join(download_path, '%(id)s.%(ext)s'),
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
-        }],
-        'progress_hooks': [hook]}
-   info_file_path = f"temp/{youtube_id}.json"
-   if os.path.exists(info_file_path):
-       with open(info_file_path, 'r') as info_file:
-           info = info_file.read()
-   else:
-       with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-          info = ydl.extract_info(youtube_url, download=True)
-       with open(info_file_path, 'w') as info_file:
-           info_file.write(str(info))
-   return info
+        }],}
+    with yt_dlp.YoutubeDL(options) as ydl:
+        ydl.download([video_url])
 
-# accepts either id OR full URL
-## POST http://127.0.0.1:8004/info query youtube_id [URL| ID]
+async def download_best_audio(video_url, save_path):
+    try:
+        yt = YouTube(video_url)
+        # Select the highest resolution available (itag=22) for downloading
+        audio_stream = yt.streams.filter(only_audio=True).first()
+        logger.info("Downloading audui:", audio_stream.title)
+        audio_stream.download(output_path=save_path)
+        logger.info("Download audio complete!")
+    except Exception as e:
+        pass
+        logger.error("Error:", str(e))
+
+
+def extract_video_url(video_id:str)-> str:
+    return f"https://www.youtube.com/watch?v={video_id}"
+
 def extract_youtube_id(youtube_input: str) -> str:
     # Regular expression pattern to match YouTube URLs
     url_pattern = r"(?:https?:\/\/(?:www\.)?)?youtu(?:\.be|be\.com)\/(?:watch\?v=|embed\/|v\/|\.be\/)([\w\-]+)"
@@ -76,68 +117,182 @@ def extract_youtube_id(youtube_input: str) -> str:
     
     return youtube_id
 
-#EP2 transcribe returns button with API to dwnload SRT FILE
-@app.post("/srt/transcribe", response_class=HTMLResponse)
-async def transcribe_to_srt(youtube_id: str):
- youtube_id = extract_youtube_id(youtube_id)
- user_dir = "tt"
- print(user_dir, youtube_id)
- input_file_path = f"temp/{youtube_id}.mp3"
- output_dir = "./temp/"
- if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
- output_file_path = os.path.join("temp", f"{youtube_id}_src.srt")
- try:
-     file_size = os.path.getsize(input_file_path)
-     # By default, the Whisper API only supports files that are less than 25 MB.
-     max_file_size = MAX_WHISPER_CONTENT_SIZE
-     msg = ""
-     if file_size > max_file_size:
-        msg = "File size exceeds the content size limit. Skipping transcription."
-        return """
-          <div>
-          <ul class="p-4 mb-4 bg-red-100">
-              <li>File size: {file_size}</li>
-              <li>{msg}</li>
-          </ul>
-          </div>
-          """.format(file_size=file_size, msg=msg)
-     else:
-        print('Processing ' + output_file_path + '...')
-        model = whisper.load_model("small") # small seems good enough for EN 
-        result = model.transcribe(input_file_path,fp16=False) #taking too long
-        if deployment_version == 'dev':
-            from whisper.utils import write_srt
-            with open(output_file_path, "w", encoding="utf-8") as srt_file:
-                write_srt(result["segments"], file=srt_file)
-        else:
-            srt_writer = whisper.utils.get_writer("srt", output_dir)
-            srt_writer(result, output_file_path)
+def get_len_text(s:str)->int:
+    if s is not None:
+        return len(s.split())
+    else:
+        return 0
+
+async def write_plain_text(output_file_path_plain: str, plain_text: str):
+    try:
+        with open(output_file_path_plain, "w", encoding="utf-8") as file:
+            file.write(plain_text)
+        logger.info("Writing to plain text completed")
+    except Exception as e:
+        logger.error("Failed to writeplain text file")
+        pass  # Ignore the exception silently
+
+async def get_transcript(video_id: str,download_path: str):
+    file_path = os.path.join(download_path, f"{video_id}.mp3")
+    logger.info(f"Getting Source Transcrpt: {video_id}")
+    file_size = 0
+    if os.path.exists(file_path):
+        file_size = os.path.getsize(file_path)
+    if 0< file_size < MAX_WHISPER_CONTENT_SIZE:
+        output_file_path = os.path.join(download_path, f"{video_id}_src.srt")
+        output_file_path_plain = os.path.join(download_path, f"{video_id}_src.txt")
+        model = whisper.load_model("base")
+        result = model.transcribe(file_path,fp16=False)
+        plain_text_result = result["text"] #write to file
+        await write_plain_text(output_file_path_plain,plain_text_result)
+        src_len_plain = get_len_text(plain_text_result)
+        logger.info(f"Source text length is: {src_len_plain}")
+        srt_writer = whisper.utils.get_writer("srt", download_path)
+        #VTT writer etc
+        srt_writer(result, output_file_path)
+        logger.info("Getting Source Transcrpt completed")
+
+async def get_translation(video_id: str,download_path: str, target_language:str="en"):
+    file_path = os.path.join(download_path, f"{video_id}.mp3")
+    logger.info(f"Getting Target EN Transcrpt: {video_id}")
+    file_size = 0
+    if os.path.exists(file_path):
+        file_size = os.path.getsize(file_path)
+    if 0< file_size < MAX_WHISPER_CONTENT_SIZE:
+        output_file_path = os.path.join(download_path, f"{video_id}_trg.srt")
+        output_file_path_plain = os.path.join(download_path, f"{video_id}_trg.txt")
+        model = whisper.load_model("small")
+        result = model.transcribe(file_path,fp16=False, task="translate")
+        plain_text_result = result["text"]
+        await write_plain_text(output_file_path_plain,plain_text_result)
+        trg_len_plain = get_len_text(plain_text_result)
+        logger.info(f"Target text length is: {trg_len_plain}")
+        srt_writer = whisper.utils.get_writer("srt", download_path)
+        srt_writer(result, output_file_path)
+        logger.info("Getting Target Transcript completed")
+
+
+
+async def download_video(video_id: str, download_path: str) -> int:
+    """Dummy function for downloading the video (replace with actual implementation)"""
+    video_url = extract_video_url(video_id)
+    file_path = os.path.join(download_path, f"{video_id}.mp3")
+    file_size = 0
+    try: 
+        os.path.exists(file_path)
+        file_size = os.path.getsize(file_path)
+        logger.info(f"File exists. File size: {file_size}")
+        return file_size
+    except FileNotFoundError:
+        logger.info(f"Downloading video from: {video_url} to {download_path}")
+        await download_best_audio_ytdl(video_url, download_path)
+        file_size = os.path.getsize(file_path)
+        logger.info(f"File size: {file_size}")
+        logger.info("Downloading video completed")
+        return file_size
+
+async def split_video(video_id: str, download_path: str):
+    file_path = os.path.join(download_path, f"{video_id}.mp3")
+    file_size = 0
+    if os.path.exists(file_path):
+        file_size = os.path.getsize(file_path)
+        good_file_size = MAX_WHISPER_CONTENT_SIZE- file_size
+        logger.info(f"Split Video says this is a  GOOD file size: {good_file_size }")
+    if good_file_size <0:
+        logger.info(f"Splitting video: {video_id}")
+        await asyncio.sleep(5)  # Pretend this is video splitting that takes time
+        logger.info("Splitting video completed")
+    else:
+        logger.info(f"No need to split video: {video_id}")
+        await asyncio.sleep(5)
     
-        msg = f"srt written to {output_file_path}"
-        return """
-              <div>
-              <ul class="p-4 mb-4 bg-green-100">
-                  <li>File size: {file_size}</li>
-                  <li>{msg}</li>
-              </ul>
-                   <button onclick="getSRT('{youtube_id}')" class="bg-purple-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">DL SRT file</button>
-              </div>   <script src="https://cdn.tailwindcss.com"></script>
-                <script>
+async def get_pure_info(video_id: str, download_path: str):
+    ydl_opts = { 
+        'format': 'bestaudio/best',
+        'outtmpl': 'temp/%(id)s.%(ext)s',
+        'download_archive': 'downloaded.txt',
+        'noplaylist': True,   
+        'quiet': True,
+        'no_warnings': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],}
+    video_url = extract_video_url(video_id)
+    file_path = os.path.join(download_path, f"{video_id}.json")
+    if os.path.exists(file_path):
+       with open(file_path, 'r') as info_file:
+           info = json.load(info_file)
+           logger.info("Json file exists - loaded")
+    else:
+       with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+          info = ydl.extract_info(video_url, download=False)
+       with open(file_path, 'w') as info_file:
+           json.dump(info, info_file)
+           logger.info("Created Json file - loaded")
+    return info
+
+
+async def check_and_create_tempdir(temp_dir: str = "temp"):
+    """Dummy function for checking and creating tempdir"""
+    os.makedirs(temp_dir, exist_ok=True)
+    logger.info(f"Checking and creating tempdir: {temp_dir}")
+    await asyncio.sleep(3)  # Use this to pretend this is simple IO operations
+    logger.info("Tempdir created")
+
+
+async def process_all_background_tasks(background_tasks: BackgroundTasks,youtube_id:str,user_dir:str):
+    """Dummy function for processing all background tasks"""
+
+    background_tasks.add_task(check_and_create_tempdir, user_dir)
+    background_tasks.add_task(download_video, youtube_id,user_dir)
+    background_tasks.add_task(split_video, youtube_id,user_dir)
+    background_tasks.add_task(get_transcript, youtube_id,user_dir)
+    background_tasks.add_task(get_translation, youtube_id,user_dir)
+    # extras summarize translation -> from plain txt
+
+
+# Start HERE 
+@app.post("/process/", response_class=HTMLResponse)
+async def process_all(background_tasks: BackgroundTasks, youtube_id: str):
+    youtube_id = extract_youtube_id(youtube_id)
+    video_url = extract_video_url(youtube_id)
+    user_dir = './temp/tt'
+    src_language= "unknown"
+    video_duration = "unknown"
+    info = None
+    info = await get_pure_info(youtube_id, user_dir)
+    if info:
+        src_language = info['language']
+        video_duration = str(info.get('duration', "0")) + " seconds"
+        video_title = info['title'].upper()
+        first_thumb = info['thumbnails'][0].get('url')
+        tags = info['tags']
+        html_tags = " ".join([f'<span style="color: {"red" if i % 2 == 0 else "blue"}; text-transform: uppercase;">{tag.upper()}</span>' for i, tag in enumerate(tags)])
+    
+    await process_all_background_tasks(background_tasks,youtube_id,user_dir) #add source language here
+    
+
+    common_html = (
+        f"""
+        <p>DEBUG Youtube ID: {youtube_id}, User Directory: {user_dir}</p>
+        <p>Spoken language: {src_language}, Duration: {video_duration}</p>
+        <h2> {video_title} </h2>
+        <img src="{first_thumb}" alt="thumbnail" width="300" height="200">
+        <div>{html_tags}</div>
+        <div>
+            <button onclick="getSourceTranscript('{youtube_id, user_dir}')" class="bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-green-700 mr-2">Source SRT </button>
+            <button onclick="getTargetTranscript('{youtube_id, user_dir}')" class="bg-purple-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Target (EN) SRT</button>
+        </div>
+            <div id="srcResult"></div>
+            <div id="trgResult"></div>
+         <script src="https://cdn.tailwindcss.com"></script>
+        <script>
                     const youtube_id = '{youtube_id}';
                     const user_dir = '{user_dir}';
 
-                function transcribeSRT() {{
-                    fetch('/srt/transcribe/' + encodeURIComponent(youtube_id) + '?user_dir=' + encodeURIComponent(user_dir), {{ method: 'POST' }})
-                    .then(response => response.text())
-                    .then(data => {{
-                        document.getElementById('transcribeResult').innerHTML = data;
-                    }})
-                    .catch(error => {{
-                        console.error('Error:', error);
-                    }});
-                }}
-                function getSRT() {{
+                function getSourceTranscript() {{
                     fetch(`/srt/target/{youtube_id}?user_dir={user_dir}`)
                     .then(response => response.blob())
                     .then(blob => {{
@@ -152,62 +307,6 @@ async def transcribe_to_srt(youtube_id: str):
                     }});
                 }}
                 </script>
-        """.format(file_size=file_size, msg=msg,youtube_id=youtube_id, user_dir=user_dir)
-
- except FileNotFoundError:
-     raise HTTPException(status_code=404, detail="Output file not found.")
-  
-  
-
-
-#EP1 Info Input YTID -> return HTML with buttons
-@app.post("/info/", response_class=HTMLResponse)
-async def get_info_from_button(youtube_id: str):
- youtube_id = extract_youtube_id(youtube_id)
- user_dir = "tt"
- print(user_dir, youtube_id)
- common_html = """
-               <div>
-               <h1> DO X or DO Y </h1>
-               </div>
-                <div>
-                    <button onclick="transcribeSRT('{youtube_id}')" class="bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-green-700 mr-2">Transcribe/button>
-                    <button onclick="summarizeSRT('{youtube_id}')" class="bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Summarize</button>
-                    <button onclick="translateSRT('{youtube_id}')" class="bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-700">Translate</button>
-                </div>
-                <div id="transcribeResult"></div>
-                <div id="getSRTResult"></div>
-                 <script src="https://cdn.tailwindcss.com"></script>
-                <script>
-                    const youtube_id = '{youtube_id}';
-                    const user_dir = '{user_dir}';
-
-                function transcribeSRT() {{
-                    fetch('/srt/transcribe/' + encodeURIComponent(youtube_id) + '?user_dir=' + encodeURIComponent(user_dir), {{ method: 'POST' }})
-                    .then(response => response.text())
-                    .then(data => {{
-                        document.getElementById('transcribeResult').innerHTML = data;
-                    }})
-                    .catch(error => {{
-                        console.error('Error:', error);
-                    }});
-                }}
-                function getSRT() {{
-                    fetch(`/srt/target/{youtube_id}?user_dir={user_dir}`)
-                    .then(response => response.blob())
-                    .then(blob => {{
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `{youtube_id}.srt`;
-                        a.click();
-                    }})
-                    .catch(error => {{
-                        console.error('Error:', error);
-                    }});
-                }}
-                </script>""".format(youtube_id=youtube_id,user_dir=user_dir)
- temp_dir = "temp"
- os.makedirs(temp_dir, exist_ok=True)
- info = get_info(youtube_id, True)
- return common_html
+        """
+    )
+    return common_html

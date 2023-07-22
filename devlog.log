@@ -1,0 +1,354 @@
+Instance allocated in nomad
+Instance is starting
+Instance is unhealthy
+Traceback (most recent call last):
+  File "/app/.heroku/python/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 416, in main
+    run(
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 587, in run
+    server.run()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/workspace/main.py", line 7, in <module>
+    from whisper.utils import write_srt
+ImportError: cannot import name 'write_srt' from 'whisper.utils' (/app/.heroku/python/lib/python3.11/site-packages/whisper/utils.py)
+Instance is unhealthy
+Instance is unhealthy
+Traceback (most recent call last):
+  File "/app/.heroku/python/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 416, in main
+    run(
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 587, in run
+    server.run()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/workspace/main.py", line 7, in <module>
+    from whisper.utils import write_srt
+ImportError: cannot import name 'write_srt' from 'whisper.utils' (/app/.heroku/python/lib/python3.11/site-packages/whisper/utils.py)
+Instance is unhealthy
+Instance terminated in nomad
+Instance allocated in nomad
+Instance is unhealthy
+Traceback (most recent call last):
+  File "/app/.heroku/python/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 416, in main
+    run(
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 587, in run
+    server.run()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/workspace/main.py", line 7, in <module>
+    from whisper.utils import write_srt
+ImportError: cannot import name 'write_srt' from 'whisper.utils' (/app/.heroku/python/lib/python3.11/site-packages/whisper/utils.py)
+Instance is unhealthy
+Instance is unhealthy
+Instance is unhealthy
+Traceback (most recent call last):
+  File "/app/.heroku/python/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 416, in main
+    run(
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/main.py", line 587, in run
+    server.run()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/workspace/main.py", line 7, in <module>
+    from whisper.utils import write_srt
+ImportError: cannot import name 'write_srt' from 'whisper.utils' (/app/.heroku/python/lib/python3.11/site-packages/whisper/utils.py)
+Instance is unhealthy
+Instance terminated in nomad
+
+Instance allocated in nomad
+Instance is unhealthy
+INFO:     Started server process [12]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8004 (Press CTRL+C to quit)
+Instance is healthy
+INFO:     154.47.24.194:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     154.47.24.194:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     154.47.24.194:0 - "POST /info?youtube_id=kNXVFB5eQfo HTTP/1.1" 307 Temporary Redirect
+tt kNXVFB5eQfo
+INFO:     154.47.24.194:0 - "POST /info/?youtube_id=kNXVFB5eQfo HTTP/1.1" 200 OK
+INFO:     154.47.24.194:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     154.47.24.194:0 - "POST /srt/transcribe?youtube_id=kNXVFB5eQfo HTTP/1.1" 404 Not Found
+INFO:     2a02:6d40:37b0:fc01:d8f4:efe2:e9d9:67c8:0 - "POST /info?youtube_id=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Db7EB4IXClpI HTTP/1.1" 307 Temporary Redirect
+tt b7EB4IXClpI
+
+[download]   0.0% of    2.49MiB at  468.27KiB/s ETA 00:05
+[download]   0.1% of    2.49MiB at    1.09MiB/s ETA 00:02
+[download]   0.3% of    2.49MiB at    2.23MiB/s ETA 00:01
+[download]   0.6% of    2.49MiB at    4.05MiB/s ETA 00:00
+[download]   1.2% of    2.49MiB at    3.17MiB/s ETA 00:00
+[download]   2.5% of    2.49MiB at    1.41MiB/s ETA 00:01
+[download]   5.0% of    2.49MiB at    1.68MiB/s ETA 00:01
+[download]  10.0% of    2.49MiB at    2.31MiB/s ETA 00:00
+[download]  20.1% of    2.49MiB at    3.53MiB/s ETA 00:00
+[download]  40.2% of    2.49MiB at    5.67MiB/s ETA 00:00
+[download]  80.4% of    2.49MiB at    9.47MiB/s ETA 00:00
+[download] 100.0% of    2.49MiB at   10.99MiB/s ETA 00:00
+[download] 100% of    2.49MiB in 00:00:00 at 7.07MiB/s   temp/b7EB4IXClpI.webm
+
+                                                      
+INFO:     2a02:6d40:37b0:fc01:d8f4:efe2:e9d9:67c8:0 - "POST /info/?youtube_id=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Db7EB4IXClpI HTTP/1.1" 500 Internal Server Error
+ERROR: Postprocessing: ffprobe and ffmpeg not found. Please install or provide the path using --ffmpeg-location
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 3439, in process_info
+    replace_info_dict(self.post_process(dl_filename, info_dict, files_to_move))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 3621, in post_process
+    info = self.run_all_pps('post_process', info, additional_pps=info.get('__postprocessors'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 3603, in run_all_pps
+    info = self.run_pp(pp, info)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 3581, in run_pp
+    files_to_delete, infodict = pp.run(infodict)
+                                ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/postprocessor/common.py", line 24, in run
+    ret = func(self, info, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/postprocessor/common.py", line 129, in wrapper
+    return func(self, info)
+           ^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/postprocessor/ffmpeg.py", line 493, in run
+    filecodec = self.get_audio_codec(path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/postprocessor/ffmpeg.py", line 241, in get_audio_codec
+    raise PostProcessingError('ffprobe and ffmpeg not found. Please install or provide the path using --ffmpeg-location')
+yt_dlp.utils.PostProcessingError: ffprobe and ffmpeg not found. Please install or provide the path using --ffmpeg-location
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/protocols/http/h11_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/fastapi/applications.py", line 289, in __call__
+    await super().__call__(scope, receive, send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/app/.heroku/python/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/app/.heroku/python/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/app/.heroku/python/lib/python3.11/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/fastapi/routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/fastapi/routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/main.py", line 113, in get_info_from_button
+    info = get_info(youtube_id, True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/main.py", line 43, in get_info
+    info = ydl.extract_info(youtube_url, download=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 1549, in extract_info
+    return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 1560, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 1709, in __extract_info
+    return self.process_ie_result(ie_result, download, extra_info)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 1768, in process_ie_result
+    ie_result = self.process_video_result(ie_result, download=download)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 2897, in process_video_result
+    self.process_info(new_info)
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 3441, in process_info
+    self.report_error('Postprocessing: %s' % str(err))
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 1042, in report_error
+    self.trouble(f'{self._format_err("ERROR:", self.Styles.ERROR)} {message}', *args, **kwargs)
+  File "/app/.heroku/python/lib/python3.11/site-packages/yt_dlp/YoutubeDL.py", line 981, in trouble
+    raise DownloadError(message, exc_info)
+yt_dlp.utils.DownloadError: ERROR: Postprocessing: ffprobe and ffmpeg not found. Please install or provide the path using --ffmpeg-location
+INFO:     2a02:6d40:37b0:fc01:d8f4:efe2:e9d9:67c8:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     2a02:6d40:37b0:fc01:d8f4:efe2:e9d9:67c8:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     2a02:6d40:37b0:fc01:d8f4:efe2:e9d9:67c8:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     2a02:6d40:37b0:fc01:29e0:7b0b:f107:f3cb:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     2a02:6d40:37b0:fc01:29e0:7b0b:f107:f3cb:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
